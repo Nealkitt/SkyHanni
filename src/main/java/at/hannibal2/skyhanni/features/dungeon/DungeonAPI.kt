@@ -1,13 +1,16 @@
 package at.hannibal2.skyhanni.features.dungeon
 
+import at.hannibal2.skyhanni.data.ClickType
+import at.hannibal2.skyhanni.data.ClickedBlockType
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.ScoreboardData
+import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
+import at.hannibal2.skyhanni.events.DungeonBlockClickEvent
 import at.hannibal2.skyhanni.events.DungeonBossRoomEnterEvent
 import at.hannibal2.skyhanni.events.DungeonCompleteEvent
 import at.hannibal2.skyhanni.events.DungeonEnterEvent
-import at.hannibal2.skyhanni.events.DungeonPhaseChangeEvent
 import at.hannibal2.skyhanni.events.DungeonStartEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.LorenzChatEvent
@@ -15,6 +18,8 @@ import at.hannibal2.skyhanni.events.LorenzTickEvent
 import at.hannibal2.skyhanni.events.LorenzWorldChangeEvent
 import at.hannibal2.skyhanni.events.TablistFooterUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.BlockUtils
+import at.hannibal2.skyhanni.utils.BlockUtils.getBlockAt
 import at.hannibal2.skyhanni.utils.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.CollectionUtils.equalsOneOf
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
@@ -31,6 +36,7 @@ import at.hannibal2.skyhanni.utils.StringUtils.firstLetterUppercase
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TabListData
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -38,13 +44,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object DungeonAPI {
 
     private val floorPattern = " §7⏣ §cThe Catacombs §7\\((?<floor>.*)\\)".toPattern()
-    private val uniqueClassBonus =
-        "^Your ([A-Za-z]+) stats are doubled because you are the only player using this class!$".toRegex()
+    private val uniqueClassBonus = "^Your ([A-Za-z]+) stats are doubled because you are the only player using this class!$".toRegex()
 
-    private val bossPattern =
-        "View all your (?<name>\\w+) Collection".toPattern()
-    private val levelPattern =
-        " +(?<kills>\\d+).*".toPattern()
+    private val bossPattern = "View all your (?<name>\\w+) Collection".toPattern()
+    private val levelPattern = " +(?<kills>\\d+).*".toPattern()
     private val killPattern = " +☠ Defeated (?<boss>\\w+).*".toPattern()
     private val totalKillsPattern = "§7Total Kills: §e(?<kills>.*)".toPattern()
 
@@ -55,11 +58,12 @@ object DungeonAPI {
     var playerClass: DungeonClass? = null
     var playerClassLevel = -1
     var isUniqueClass = false
-    var dungeonPhase: DungeonPhase? = null
 
     val bossStorage: MutableMap<DungeonFloor, Int>? get() = ProfileStorageData.profileSpecific?.dungeons?.bosses
 
     private val patternGroup = RepoPattern.group("dungeon")
+    private const val WITHER_ESSENCE_TEXTURE =
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzRkYjRhZGZhOWJmNDhmZjVkNDE3MDdhZTM0ZWE3OGJkMjM3MTY1OWZjZDhjZDg5MzQ3NDlhZjRjY2U5YiJ9fX0="
 
     /**
      * REGEX-TEST: Time Elapsed: §a01m 17s
@@ -70,9 +74,13 @@ object DungeonAPI {
         "Time Elapsed: §.(?:(?<minutes>\\d+)m )?(?<seconds>\\d+)s",
     )
 
+    /**
+     * REGEX-TEST: §f                §r§cMaster Mode The Catacombs §r§8- §r§eFloor VII
+     * REGEX-TEST: §f                         §r§cThe Catacombs §r§8- §r§eFloor V
+     */
     private val dungeonComplete by patternGroup.pattern(
         "complete",
-        "§.\\s+§.§.(?:The|Master Mode) Catacombs §.§.- §.§.(?:Floor )?(?<floor>M?[IV]{1,3}|Entrance)",
+        "§.\\s+§.§.(?:Master Mode )?The Catacombs §.§.- §.§.(?:Floor )?(?<floor>M?[IV]{1,3}|Entrance)",
     )
     private val dungeonRoomPattern by patternGroup.pattern(
         "room",
@@ -147,7 +155,6 @@ object DungeonAPI {
         group("roomId")
     }
 
-
     fun getColor(level: Int): String = when {
         level >= 50 -> "§c§l"
         level >= 45 -> "§c"
@@ -172,10 +179,9 @@ object DungeonAPI {
             }
         }
         if (dungeonFloor != null && playerClass == null) {
-            val playerTeam =
-                TabListData.getTabList().firstOrNull {
-                    it.contains(LorenzUtils.getPlayerName())
-                }?.removeColor() ?: ""
+            val playerTeam = TabListData.getTabList().firstOrNull {
+                it.contains(LorenzUtils.getPlayerName())
+            }?.removeColor() ?: ""
 
             for (dungeonClass in DungeonClass.entries) {
                 if (playerTeam.contains("(${dungeonClass.scoreboardName} ")) {
@@ -216,7 +222,6 @@ object DungeonAPI {
         playerClassLevel = -1
         completed = false
         DungeonBlessings.reset()
-        dungeonPhase = null
     }
 
     @SubscribeEvent
@@ -231,7 +236,6 @@ object DungeonAPI {
         }
 
         if (!LorenzUtils.inSkyBlock) return
-        handlePhaseMessage(event.message)
         killPattern.matchMatcher(event.message.removeColor()) {
             val bossCollections = bossStorage ?: return
             val boss = DungeonFloor.byBossName(group("boss"))
@@ -356,96 +360,26 @@ object DungeonAPI {
         }
     }
 
-    enum class DungeonPhase {
-        F6_TERRACOTTA,
-        F6_GIANTS,
-        F6_SADAN,
-        F7_MAXOR,
-        F7_STORM,
-        F7_GOLDOR_1,
-        F7_GOLDOR_2,
-        F7_GOLDOR_3,
-        F7_GOLDOR_4,
-        F7_GOLDOR_5,
-        F7_NECRON,
-        M7_WITHER_KING
-    }
+    @SubscribeEvent
+    fun onBlockClick(event: BlockClickEvent) {
+        if (!inDungeon() || event.clickType != ClickType.RIGHT_CLICK) return
 
-    private val phasePatternGroup = RepoPattern.group("dungeon.boss.message")
-    private val terracottaStartPattern by phasePatternGroup.pattern(
-        "f6.terracotta",
-        "§c\\[BOSS] Sadan§r§f: So you made it all the way here\\.\\.\\. Now you wish to defy me\\? Sadan\\?!"
-    )
-    private val giantsStartPattern by phasePatternGroup.pattern(
-        "f6.giants",
-        "§c\\[BOSS] Sadan§r§f: ENOUGH!"
-    )
-    private val sadanStartPattern by phasePatternGroup.pattern(
-        "f6.sadan",
-        "§c\\[BOSS] Sadan§r§f: You did it\\. I understand now, you have earned my respect\\."
-    )
-
-    private val maxorStartPattern by phasePatternGroup.pattern(
-        "f7.maxor",
-        "§4\\[BOSS] Maxor§r§c: §r§cWELL! WELL! WELL! LOOK WHO'S HERE!"
-    )
-    private val stormStartPattern by phasePatternGroup.pattern(
-        "f7.storm",
-        "§4\\[BOSS] Storm§r§c: §r§cPathetic Maxor, just like expected\\."
-    )
-    private val goldorStartPattern by phasePatternGroup.pattern(
-        "f7.goldor.start",
-        "§4\\[BOSS] Goldor§r§c: §r§cWho dares trespass into my domain\\?"
-    )
-    val goldorTerminalPattern by phasePatternGroup.pattern(
-        "f7.goldor.terminalcomplete",
-        "§.(?<playerName>\\w+)§r§a (?:activated|completed) a (?<type>lever|terminal|device)! \\(§r§c(?<currentTerminal>\\d)§r§a/(?<total>\\d)\\)"
-    )
-    private val goldor5StartPattern by phasePatternGroup.pattern(
-        "f7.goldor.5",
-        "§aThe Core entrance is opening!"
-    )
-    private val necronStartPattern by phasePatternGroup.pattern(
-        "f7.goldor.start",
-        "§4\\[BOSS] Necron§r§c: §r§cYou went further than any human before, congratulations\\."
-    )
-    private val witherKingStartPattern by phasePatternGroup.pattern(
-        "m7.witherking",
-        "§4\\[BOSS] Necron§r§c: §r§cAll this, for nothing\\.\\.\\."
-    )
-
-    private fun handlePhaseMessage(message: String) {
-        if (dungeonFloor == "F6" || dungeonFloor == "M6") when {  //move to enum
-            terracottaStartPattern.matches(message) -> changePhase(DungeonPhase.F6_TERRACOTTA)
-            giantsStartPattern.matches(message) -> changePhase(DungeonPhase.F6_GIANTS)
-            sadanStartPattern.matches(message) -> changePhase(DungeonPhase.F6_SADAN)
-        }
-
-        if (dungeonFloor == "F7" || dungeonFloor == "M7") { //move to enum
-            goldorTerminalPattern.matchMatcher(message) {
-                val currentTerminal = group("currentTerminal").toIntOrNull() ?: return
-                val totalTerminals = group("total").toIntOrNull() ?: return
-                if (currentTerminal != totalTerminals) return
-                changePhase(when (dungeonPhase) {
-                    DungeonPhase.F7_GOLDOR_1 -> DungeonPhase.F7_GOLDOR_2
-                    DungeonPhase.F7_GOLDOR_2 -> DungeonPhase.F7_GOLDOR_3
-                    DungeonPhase.F7_GOLDOR_3 -> DungeonPhase.F7_GOLDOR_4
-                    else -> return
-                })
+        val position = event.position
+        val blockType: ClickedBlockType = when (position.getBlockAt()) {
+            Blocks.chest -> ClickedBlockType.CHEST
+            Blocks.trapped_chest -> ClickedBlockType.TRAPPED_CHEST
+            Blocks.lever -> ClickedBlockType.LEVER
+            Blocks.skull -> {
+                val blockTexture = BlockUtils.getTextureFromSkull(position.toBlockPos())
+                if (blockTexture == WITHER_ESSENCE_TEXTURE) {
+                    ClickedBlockType.WITHER_ESSENCE
+                } else {
+                    return
+                }
             }
-            when {
-                maxorStartPattern.matches(message) -> changePhase(DungeonPhase.F7_MAXOR)
-                stormStartPattern.matches(message) -> changePhase(DungeonPhase.F7_STORM)
-                goldorStartPattern.matches(message) -> changePhase(DungeonPhase.F7_GOLDOR_1)
-                goldor5StartPattern.matches(message) -> changePhase(DungeonPhase.F7_GOLDOR_5)
-                necronStartPattern.matches(message) -> changePhase(DungeonPhase.F7_NECRON)
-                witherKingStartPattern.matches(message) -> if (dungeonPhase != null) changePhase(DungeonPhase.M7_WITHER_KING)
-            }
-        }
-    }
 
-    private fun changePhase(newPhase: DungeonPhase) {
-        DungeonPhaseChangeEvent(newPhase)
-        dungeonPhase = newPhase
+            else -> return
+        }
+        DungeonBlockClickEvent(position, blockType).post()
     }
 }
