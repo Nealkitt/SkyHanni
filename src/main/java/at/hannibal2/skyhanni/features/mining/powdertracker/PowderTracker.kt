@@ -17,7 +17,7 @@ import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.mining.PowderGainEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.CollectionUtils.addOrPut
-import at.hannibal2.skyhanni.utils.CollectionUtils.addString
+import at.hannibal2.skyhanni.utils.CollectionUtils.addSearchString
 import at.hannibal2.skyhanni.utils.ConditionalUtils.afterChange
 import at.hannibal2.skyhanni.utils.ConfigUtils
 import at.hannibal2.skyhanni.utils.LorenzUtils.isInIsland
@@ -27,7 +27,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.TimeUtils
-import at.hannibal2.skyhanni.utils.renderables.Renderable
+import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
 import at.hannibal2.skyhanni.utils.tracker.TrackerData
@@ -198,7 +198,7 @@ object PowderTracker {
         }
 
         for (reward in PowderChestReward.entries) {
-            if (reward == PowderChestReward.MITHRIL_POWDER || reward == PowderChestReward.GEMSTONE_POWDER) return
+            if (reward == PowderChestReward.GEMSTONE_POWDER) continue
             reward.chatPattern.matchMatcher(msg) {
                 tracker.modify {
                     val count = it.rewards[reward] ?: 0
@@ -216,12 +216,10 @@ object PowderTracker {
         tracker.modify {
             val reward = when (event.powder) {
                 HotmAPI.PowderType.GEMSTONE -> PowderChestReward.GEMSTONE_POWDER
-                HotmAPI.PowderType.MITHRIL -> PowderChestReward.MITHRIL_POWDER
                 else -> return@modify
             }
             it.rewards.addOrPut(reward, event.amount)
         }
-        tracker.update()
     }
 
     @SubscribeEvent
@@ -275,6 +273,17 @@ object PowderTracker {
             }
             newList
         }
+
+        event.transform(61, "mining.powderTracker.textFormat") { element ->
+            val newList = JsonArray()
+            for (entry in element.asJsonArray) {
+                if (entry is JsonNull) continue
+                if (entry.asString.let { it != "MITHRIL_POWDER" }) {
+                    newList.add(entry)
+                }
+            }
+            newList
+        }
     }
 
     @SubscribeEvent
@@ -284,10 +293,10 @@ object PowderTracker {
         }
     }
 
-    private fun formatDisplay(map: List<Renderable>) = buildList<Renderable> {
+    private fun formatDisplay(map: List<Searchable>) = buildList<Searchable> {
         if (map.isEmpty()) return@buildList
 
-        addString("§b§lPowder Tracker")
+        addSearchString("§b§lPowder Tracker")
 
         for (index in config.textFormat.get()) {
             // TODO, change functionality to use enum rather than ordinals
@@ -295,29 +304,26 @@ object PowderTracker {
         }
     }
 
-    private fun drawDisplay(data: Data): List<Renderable> = buildList {
+    private fun drawDisplay(data: Data): List<Searchable> = buildList {
         calculate(data, gemstoneInfo, PowderChestReward.GEMSTONE_POWDER)
-        calculate(data, mithrilInfo, PowderChestReward.MITHRIL_POWDER)
         calculate(data, diamondEssenceInfo, PowderChestReward.DIAMOND_ESSENCE)
         calculate(data, goldEssenceInfo, PowderChestReward.GOLD_ESSENCE)
         calculateChest(data)
         calculateHardStone(data)
 
         val chestPerHour = format(chestInfo.perHour)
-        addString("§d${data.totalChestPicked.addSeparators()} Total Chests Picked §7($chestPerHour/h)")
-        addString("§bDouble Powder: ${if (doublePowder) "§aActive! §7($powderTimer)" else "§cInactive!"}")
+        addSearchString("§d${data.totalChestPicked.addSeparators()} Total Chests Picked §7($chestPerHour/h)")
+        addSearchString("§bDouble Powder: ${if (doublePowder) "§aActive! §7($powderTimer)" else "§cInactive!"}")
 
-        val entries = PowderChestReward.entries
         val rewards = data.rewards
-        addPerHour(rewards, entries[0], mithrilInfo)
-        addPerHour(rewards, entries[1], gemstoneInfo)
-        addString("")
-        addPerHour(rewards, entries[46], diamondEssenceInfo)
-        addPerHour(rewards, entries[47], goldEssenceInfo)
-        addString("")
+        addPerHour(rewards, PowderChestReward.GEMSTONE_POWDER, gemstoneInfo)
+        addSearchString("")
+        addPerHour(rewards, PowderChestReward.DIAMOND_ESSENCE, diamondEssenceInfo)
+        addPerHour(rewards, PowderChestReward.GOLD_ESSENCE, goldEssenceInfo)
+        addSearchString("")
         val hardStonePerHour = format(hardStoneInfo.perHour)
-        addString("§b${data.totalHardStoneCompacted.addSeparators()} §fHard Stone §bCompacted §7($hardStonePerHour/h)")
-        addString("")
+        addSearchString("§b${data.totalHardStoneCompacted.addSeparators()} §fHard Stone §bCompacted §7($hardStonePerHour/h)", "Hard Stone")
+        addSearchString("")
         for ((gem, color) in gemstones) {
             var totalGemstone = 0L
 
@@ -334,38 +340,57 @@ object PowderTracker {
             }
 
             val (flawless, fine, flawed, rough) = convert(totalGemstone)
-            addString("§5${flawless}§7-§9${fine}§7-§a${flawed}§f-${rough} $color$gem Gemstone")
+            addSearchString("§5$flawless§7-§9$fine§7-§a$flawed§f-$rough $color$gem Gemstone", "Gemstone")
         }
 
         var totalParts = 0L
-        for (reward in entries.subList(26, 32)) { // robots part
+        for (reward in listOf(
+            PowderChestReward.FTX_3070,
+            PowderChestReward.ELECTRON_TRANSIMTTER,
+            PowderChestReward.ROBOTRON_REFLECTOR,
+            PowderChestReward.SUPERLITE_MOTOR,
+            PowderChestReward.CONTROL_SWITCH,
+            PowderChestReward.SYNTHETIC_HEART,
+        )) {
             val count = rewards.getOrDefault(reward, 0)
             totalParts += count
-            addString("§b${count.addSeparators()} ${reward.displayName}")
+            val name = reward.displayName
+            addSearchString("§b${count.addSeparators()} $name", name)
         }
-        addString("§b${totalParts.addSeparators()} §9Total Robot Parts")
+        addSearchString("§b${totalParts.addSeparators()} §9Total Robot Parts")
 
         val goblinEgg = rewards.getOrDefault(PowderChestReward.GOBLIN_EGG, 0)
         val greenEgg = rewards.getOrDefault(PowderChestReward.GREEN_GOBLIN_EGG, 0)
         val redEgg = rewards.getOrDefault(PowderChestReward.RED_GOBLIN_EGG, 0)
         val yellowEgg = rewards.getOrDefault(PowderChestReward.YELLOW_GOBLIN_EGG, 0)
         val blueEgg = rewards.getOrDefault(PowderChestReward.BLUE_GOBLIN_EGG, 0)
-        addString("§3$blueEgg§7-§c$redEgg§7-§e$yellowEgg§f-§a$greenEgg§f-§9$goblinEgg §fGoblin Egg")
+        addSearchString("§3$blueEgg§7-§c$redEgg§7-§e$yellowEgg§f-§a$greenEgg§f-§9$goblinEgg §fGoblin Egg")
 
-        for (reward in entries.subList(37, 46)) {
+        for (reward in listOf(
+            PowderChestReward.WISHING_COMPASS,
+            PowderChestReward.SLUDGE_JUICE,
+            PowderChestReward.ASCENSION_ROPE,
+            PowderChestReward.TREASURITE,
+            PowderChestReward.JUNGLE_HEART,
+            PowderChestReward.PICKONIMBUS_2000,
+            PowderChestReward.YOGGIE,
+            PowderChestReward.PREHISTORIC_EGG,
+            PowderChestReward.OIL_BARREL,
+        )) {
             val count = rewards.getOrDefault(reward, 0).addSeparators()
-            addString("§b$count ${reward.displayName}")
+            val name = reward.displayName
+            addSearchString("§b$count $name", name)
         }
     }
 
-    private fun MutableList<Renderable>.addPerHour(
+    private fun MutableList<Searchable>.addPerHour(
         map: Map<PowderChestReward, Long>,
         reward: PowderChestReward,
         info: ResourceInfo,
     ) {
         val mithrilCount = map.getOrDefault(reward, 0).addSeparators()
         val mithrilPerHour = format(info.perHour)
-        addString("§b$mithrilCount ${reward.displayName} §7($mithrilPerHour/h)")
+        addSearchString("§b$mithrilCount ${reward.displayName} §7($mithrilPerHour/h)")
     }
 
     private fun format(e: Double): String = if (e < 0) "0" else e.toInt().addSeparators()

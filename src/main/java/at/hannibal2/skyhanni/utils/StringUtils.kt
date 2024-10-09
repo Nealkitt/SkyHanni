@@ -247,7 +247,6 @@ object StringUtils {
         } ?: text
     }
 
-
     /**
      * Creates a comma-separated list using natural formatting (a, b, and c).
      * @param list - the list of strings to join into a string, containing 0 or more elements.
@@ -271,7 +270,7 @@ object StringUtils {
     }
 
     fun progressBar(percentage: Double, steps: Int = 24): Any {
-        //'§5§o§2§l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §f§l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §r §e348,144.3§6/§e936k'
+        // '§5§o§2§l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §f§l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §l§m §r §e348,144.3§6/§e936k'
         val prefix = "§5§o§2"
         val step = "§l§m "
         val missing = "§f"
@@ -569,5 +568,10 @@ object StringUtils {
         } catch (e: IllegalArgumentException) {
             false
         }
+    }
+
+    fun optionalAn(string: String): String {
+        if (string.isEmpty()) return ""
+        return if (string[0] in "aeiou") "an" else "a"
     }
 }

@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.events.LorenzChatEvent
+import at.hannibal2.skyhanni.features.chat.ChatFilter.messagesMap
 import at.hannibal2.skyhanni.features.chat.PowderMiningChatFilter.genericMiningRewardMessage
 import at.hannibal2.skyhanni.features.dungeon.DungeonAPI
 import at.hannibal2.skyhanni.features.garden.GardenAPI
@@ -26,7 +27,7 @@ object ChatFilter {
     private val config get() = SkyHanniMod.feature.chat.filterType
     private val dungeonConfig get() = SkyHanniMod.feature.dungeon.messageFilter
 
-    /// <editor-fold desc="Regex Patterns & Messages">
+    // <editor-fold desc="Regex Patterns & Messages">
     // Lobby Messages
     private val lobbyPatterns = listOf(
         // player join
@@ -88,15 +89,19 @@ object ChatFilter {
     )
 
     // Guild EXP
+    /**
+     * REGEX-TEST: §aYou earned §r§22 GEXP §r§afrom playing SkyBlock!
+     * REGEX-TEST: §aYou earned §r§22 GEXP §r§a+ §r§c210 Event EXP §r§afrom playing SkyBlock!
+     */
     private val guildExpPatterns = listOf(
-        // §aYou earned §r§22 GEXP §r§afrom playing SkyBlock!
-        // §aYou earned §r§22 GEXP §r§a+ §r§c210 Event EXP §r§afrom playing SkyBlock!
         "§aYou earned §r§2.* GEXP (§r§a\\+ §r§.* Event EXP )?§r§afrom playing SkyBlock!".toPattern(),
     )
 
     // Kill Combo
+    /**
+     * REGEX-TEST: §a§l+5 Kill Combo §r§8+§r§b3% §r§b? Magic Find
+     */
     private val killComboPatterns = listOf(
-        //§a§l+5 Kill Combo §r§8+§r§b3% §r§b? Magic Find
         "§.§l\\+(.*) Kill Combo (.*)".toPattern(),
         "§cYour Kill Combo has expired! You reached a (.*) Kill Combo!".toPattern(),
     )
@@ -276,6 +281,7 @@ object ChatFilter {
         "§6§lGOOD CATCH! §r§bYou found a §r§fSpooky Bait§r§b.",
         "§e[NPC] Jacob§f: §rMy contest has started!",
         "§eObtain a §r§6Booster Cookie §r§efrom the community shop in the hub!",
+        "Unknown command. Type \"/help\" for help. ('uhfdsolguhkjdjfhgkjhdfdlgkjhldkjhlkjhsldkjfhldshkjf')",
     )
 
     private val skymallMessages = listOf(
@@ -408,7 +414,7 @@ object ChatFilter {
 
     /**
      * REGEX-TEST: §aStarted parkour cocoa!
-     * REGEX-TEST: §aFinished parkour cocoa in 12:34.567
+     * REGEX-TEST: §aFinished parkour cocoa in 12:34.567!
      * REGEX-TEST: §aReached checkpoint #4 for parkour cocoa!
      * REGEX-TEST: §4Wrong checkpoint for parkour cocoa!
      * REGEX-TEST: §4You haven't reached all checkpoints for parkour cocoa!
@@ -432,14 +438,16 @@ object ChatFilter {
         "§4Cancelled parkour!",
     )
 
-    // §r§aWarped from the tppadone §r§ato the tppadtwo§r§a!
+    /**
+     ** REGEX-TEST: §r§aWarped from the tpPadOne §r§ato the tpPadTwo§r§a!
+     */
     private val teleportPadPatterns = listOf(
         "§aWarped from the (.*) §r§ato the (.*)§r§a!".toPattern(),
     )
 
     // §r§4This Teleport Pad does not have a destination set!
     private val teleportPadMessages = listOf(
-        "§4This Teleport Pad does not have a destination set!"
+        "§4This Teleport Pad does not have a destination set!",
     )
 
     private val patternsMap: Map<String, List<Pattern>> = mapOf(
@@ -497,7 +505,7 @@ object ChatFilter {
         "slayer" to slayerMessageStartWith,
         "profile_join" to profileJoinMessageStartsWith,
     )
-    /// </editor-fold>
+    // </editor-fold>
 
     @SubscribeEvent
     fun onChat(event: LorenzChatEvent) {
@@ -512,6 +520,7 @@ object ChatFilter {
      * @param message The message to check
      * @return The reason why the message was blocked, empty if not blocked
      */
+    @Suppress("CyclomaticComplexMethod")
     private fun block(message: String): String? = when {
         config.hypixelHub && message.isPresent("lobby") -> "lobby"
         config.empty && StringUtils.isEmpty(message) -> "empty"
@@ -520,8 +529,8 @@ object ChatFilter {
         config.guildExp && message.isPresent("guild_exp") -> "guild_exp"
         config.killCombo && message.isPresent("kill_combo") -> "kill_combo"
         config.profileJoin && message.isPresent("profile_join") -> "profile_join"
-        config.hideParkour && message.isPresent("parkour") -> "parkour"
-        config.hideTeleportPads && message.isPresent("teleport_pads") -> "teleport_pads"
+        config.parkour && message.isPresent("parkour") -> "parkour"
+        config.teleportPads && message.isPresent("teleport_pads") -> "teleport_pads"
 
         config.hideAlphaAchievements && HypixelData.hypixelAlpha && message.isPresent("achievement_get") -> "achievement_get"
 
