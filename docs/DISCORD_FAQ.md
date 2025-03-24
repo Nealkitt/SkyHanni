@@ -17,8 +17,8 @@ _Frequently Asked Questions_
 > Use the command `/sh open hotkey` to set a hotkey, and press it inside the GUI you want to move.
 
 > **6: Will SkyHanni support newer Minecraft versions (1.21+)?**
-> Yes, it is planned. The Foraging Update isn't expected to release for several months, but we're already working on updating the mod to support newer versions behind the scenes.
-> Initially, we plan to support both 1.8.9 and 1.21, but we may consider removing support for 1.8.9 once the newer version becomes more essential for SkyBlock gameplay.
+> Yes, it is planned. The Foraging Update isn't expected to release for several more months (state march 2025), but we're already working on updating the mod to support newer versions behind the scenes.
+> Initially, we plan to support both 1.8.9 and 1.21.4, but we will consider removing support for 1.8.9 once the newer version becomes more integral for SkyBlock gameplay.
 
 > **7: My Jacob Contest Display crops are wrong, how do I fix this?**
 > Run the command `/shclearcontestdata` to clear the Jacob contest data.
