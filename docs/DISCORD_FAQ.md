@@ -75,5 +75,5 @@ _Frequently Asked Questions_
 > If you are using [VolcAddons](https://github.com/zhenga8533/VolcAddons), disable Hide Far/Hide Close Entities.
 
 
-*This FAQ was last updated on March 23rd, 2025.
+*This FAQ was last updated on March 24rd, 2025.
 If you believe there's something that should be added to this list, please tell us, so we can add it.*
