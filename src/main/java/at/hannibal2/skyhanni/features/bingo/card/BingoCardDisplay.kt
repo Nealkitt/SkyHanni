@@ -49,11 +49,8 @@ object BingoCardDisplay {
     // Todo use an enum for the display modes, what does 0 mean?
     private var displayMode = 0
 
-    private fun command() {
-        reload()
-    }
-
     private fun reload() {
+        ChatUtils.chat("Reloaded bingo goals")
         BingoApi.bingoGoals.clear()
     }
 
@@ -67,6 +64,7 @@ object BingoCardDisplay {
             return
         }
         toggleMode()
+        ChatUtils.chat("Toggled Bingo Card Visibility!")
     }
 
     private fun toggleMode() {
@@ -106,9 +104,7 @@ object BingoCardDisplay {
         event.registerBrigadier("shreloadbingodata") {
             description = "Reloads the bingo card data"
             category = CommandCategory.DEVELOPER_DEBUG
-            simpleCallback {
-                reload()
-            }
+            simpleCallback { reload() }
         }
     }
 
