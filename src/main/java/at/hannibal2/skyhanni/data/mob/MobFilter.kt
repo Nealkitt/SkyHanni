@@ -79,7 +79,7 @@ object MobFilter {
     )
     val dungeonNameFilter by patternGroup.pattern(
         "filter.dungeon",
-        "^(?<mobType>(§..)+ )?(?:(?<star>§6✯)\\s)?(?:(?<attribute>${DungeonAttribute.toRegexLine})\\s)?(?:\\[[\\w\\d]+\\]\\s)?(?<name>[^ᛤ]+)(?: ᛤ)?\\s[^\\s]+$",
+        "^(?<mobType>[༕✰]+ )?(?:(?<star>✯)\\s)?(?:(?<attribute>${DungeonAttribute.toRegexLine})\\s)?(?:\\[[\\w\\d]+\\]\\s)?(?<name>[^ᛤ]+)(?: ᛤ)?\\s[^\\s]+$",
     )
     val summonFilter by patternGroup.pattern(
         "filter.summon",
