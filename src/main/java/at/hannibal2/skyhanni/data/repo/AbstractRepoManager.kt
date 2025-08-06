@@ -274,6 +274,7 @@ abstract class AbstractRepoManager<E : AbstractRepoReloadEvent> {
 
     private fun firstError(): Boolean {
         if (latestError.passedSince() < 5.minutes) return false
+        if (!config.repoAutoUpdate) return false
 
         latestError = SimpleTimeMark.now()
         ChatUtils.chat("[SkyHanni-${SkyHanniMod.VERSION}] §7$commonName Repo Issue! Trying to auto fix it for you...")
