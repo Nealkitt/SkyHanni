@@ -13,6 +13,7 @@ import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.config.storage.OrderedWaypointsRoutes
+import at.hannibal2.skyhanni.data.GlobalRender
 import at.hannibal2.skyhanni.data.GuiEditManager
 import at.hannibal2.skyhanni.data.OtherInventoryData
 import at.hannibal2.skyhanni.data.PetDataStorage
@@ -136,7 +137,7 @@ object SkyHanniMod {
      */
     fun launchIOCoroutineWithMutex(
         mutex: Mutex,
-        block: suspend CoroutineScope.() -> Unit
+        block: suspend CoroutineScope.() -> Unit,
     ): Job = launchCoroutine {
         mutex.withLock {
             withContext(Dispatchers.IO, block)
