@@ -1,7 +1,7 @@
 package at.hannibal2.skyhanni.data.model
 
 import at.hannibal2.skyhanni.features.misc.pathfind.NavigationHelper
-import at.hannibal2.skyhanni.utils.LocationUtils
+import at.hannibal2.skyhanni.utils.GraphUtils
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.json.SkyHanniTypeAdapters.registerTypeAdapter
@@ -38,15 +38,15 @@ value class Graph(
 
     override fun lastIndexOf(element: GraphNode) = nodes.lastIndexOf(element)
 
-    fun getTags(tag: GraphNodeTag) = nodes.filter { it.hasTag(tag) }
-    fun getTags(vararg tag: GraphNodeTag) = nodes.filter { node -> tag.all { node.hasTag(it) } }
-    fun getName(name: String) = nodes.filter { it.name == name }
-    fun getNearest(location: LorenzVec): GraphNode = minBy { it.position.distanceSq(location) }
-    fun getNearest(location: LorenzVec, condition: (GraphNode) -> Boolean): GraphNode =
-        filter(condition).minBy { it.position.distanceSq(location) }
+    fun getNodesWithTags(vararg tag: GraphNodeTag): List<GraphNode> = nodes.filter { node -> tag.all { node.hasTag(it) } }
+    fun getNodesWithName(name: String): List<GraphNode> = nodes.filter { it.name == name }
 
-    fun getNearest() = getNearest(LocationUtils.playerGraphGridLocation())
-    fun getNearest(condition: (GraphNode) -> Boolean) = getNearest(LocationUtils.playerGraphGridLocation(), condition)
+    fun getNearestNode(
+        location: LorenzVec = GraphUtils.playerGraphGridLocation(),
+        condition: (GraphNode) -> Boolean = { true },
+    ): GraphNode = asSequence()
+        .filter(condition)
+        .minBy { it.position.distanceSq(location) }
 
     constructor() : this(emptyList())
 
