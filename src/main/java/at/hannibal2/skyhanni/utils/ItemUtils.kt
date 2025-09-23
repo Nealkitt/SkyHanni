@@ -951,7 +951,7 @@ object ItemUtils {
     }
 
     fun NeuInternalName.getNumberedName(amount: Number): String {
-        val prefix = if (amount == 1.0) "" else "§8${amount.addSeparators()}x "
+        val prefix = if (amount.toDouble() == 1.0) "" else "§8${amount.addSeparators()}x "
         return "$prefix§r$repoItemName"
     }
 

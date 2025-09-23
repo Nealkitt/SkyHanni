@@ -172,9 +172,9 @@ object ItemPriceUtils {
 
     fun NeuInternalName.getPriceName(amount: Number, pricePer: Double = getPrice()): String {
         val price = pricePer * amount.toDouble()
-        if (this == SKYBLOCK_COIN) return " ${price.formatCoin()} coins"
+        if (this == SKYBLOCK_COIN) return "${price.formatCoin()} coins"
 
-        return " ${getNumberedName(amount)} ${price.formatCoinWithBrackets()}"
+        return "${getNumberedName(amount)} ${price.formatCoinWithBrackets()}"
     }
 
     fun Number.formatCoinWithBrackets(gray: Boolean = false): String {

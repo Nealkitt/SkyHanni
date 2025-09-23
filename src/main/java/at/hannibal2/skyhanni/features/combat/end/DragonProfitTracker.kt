@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.features.combat.end.DragonProfitTracker.drawDisplay
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceName
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.NeuInternalName
@@ -138,8 +139,7 @@ object DragonProfitTracker : SkyHanniBucketedItemTracker<DragonType, DragonProfi
         items.forEach { (internalName, amount) ->
             getPricePer(internalName).takeIf { price: Double -> price != -1.0 }?.let { pricePer: Double ->
                 val profit: Double = amount * pricePer
-                val nameFormat = internalName.repoItemName
-                val text = "§eFound $nameFormat §8${amount}x §7(§6${profit.shortFormat()}§7)"
+                val text = "§eFound ${internalName.getPriceName(amount)}"
                 lootMap.addOrPut(text, profit)
                 totalProfit += profit
             }
