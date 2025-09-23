@@ -28,16 +28,25 @@ abstract class SkyHanniBucketedItemTracker<E : Enum<E>, BucketedData : BucketedI
     override fun ItemAddEvent.addItemFromEvent() {
         val command = source == ItemAddManager.Source.COMMAND
         lateinit var bucket: E
+        // TODO find out why those two booleans are necessary, fix the cause properly, and then remove the  two booleans
+        var errorShown = false
+        var logShown = false
         modify { data ->
             bucket = data.selectedBucket ?: run {
-                ChatUtils.userError(
-                    "No §b${data.bucketName()} §cselected for §b$name§c.\n§cSelect one in the §b$name §cGUI, then try again.",
-                )
+                if (!errorShown) {
+                    ChatUtils.userError(
+                        "No §b${data.bucketName()} §cselected for §b$name§c.\n§cSelect one in the §b$name §cGUI, then try again.",
+                    )
+                    errorShown = true
+                }
                 cancel()
                 return@modify
             }
             data.addItem(bucket, internalName, amount, command)
-            logCompletedAddEvent()
+            if (!logShown) {
+                logCompletedAddEvent()
+                logShown = true
+            }
         }
     }
 
