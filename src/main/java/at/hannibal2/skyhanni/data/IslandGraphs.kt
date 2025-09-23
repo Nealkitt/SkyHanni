@@ -211,6 +211,9 @@ object IslandGraphs {
     }
 
     private fun loadIsland(newIsland: IslandType) {
+        // island graphs doesn't support private island and garden
+        if (IslandTypeTags.PERSONAL_ISLAND.inAny()) return
+
         if (newIsland == IslandType.DWARVEN_MINES) {
             loadDwarvenMines()
         } else {
@@ -264,7 +267,11 @@ object IslandGraphs {
                 }
             } catch (e: Error) {
                 currentIslandGraph = null
-                throw e
+                ErrorManager.logErrorWithData(
+                    e,
+                    "failed to load graph data for island $islandName",
+                    "island name" to islandName,
+                )
             }
         }
     }
