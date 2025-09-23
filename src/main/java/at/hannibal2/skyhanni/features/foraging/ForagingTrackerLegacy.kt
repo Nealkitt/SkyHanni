@@ -35,15 +35,13 @@ object ForagingTrackerLegacy {
         }
     }
 
-    class BucketData : BucketedItemTrackerData<TreeType>(TreeType::class) {
-        override fun resetItems() {
-            treesCut = enumMapOf()
-            wholeTreesCut = enumMapOf()
-            hotfExperience = enumMapOf()
-            foragingExperience = enumMapOf()
-            forestWhispers = enumMapOf()
-        }
-
+    data class BucketData(
+        @Expose var treesCut: MutableMap<TreeType, Long> = enumMapOf(),
+        @Expose var wholeTreesCut: MutableMap<TreeType, Double> = enumMapOf(),
+        @Expose var hotfExperience: MutableMap<TreeType, Long> = enumMapOf(),
+        @Expose var foragingExperience: MutableMap<TreeType, Long> = enumMapOf(),
+        @Expose var forestWhispers: MutableMap<TreeType, Long> = enumMapOf(),
+    ) : BucketedItemTrackerData<TreeType>(TreeType::class) {
         override fun getDescription(bucket: TreeType?, timesGained: Long): List<String> {
             val divisor = 1.coerceAtLeast(
                 selectedBucket?.let {
@@ -58,7 +56,7 @@ object ForagingTrackerLegacy {
             )
         }
 
-        override fun getCoinName(bucket: TreeType?, item: TrackedItem) = "§6Coins"
+        override fun getCoinName(bucket: TreeType?, item: TrackedItem) = "<no coins>"
         override fun getCoinDescription(bucket: TreeType?, item: TrackedItem): List<String> {
             val mobKillCoinsFormat = item.totalAmount.shortFormat()
             return listOf(
@@ -66,31 +64,13 @@ object ForagingTrackerLegacy {
                 "§7You got §6$mobKillCoinsFormat coins §7that way.",
             )
         }
-
         override fun TreeType.isBucketSelectable() = true
+        override fun bucketName(): String = "tree"
 
-        override fun bucketName(): String {
-            return "tree"
-        }
-
-        @Expose
-        var treesCut: MutableMap<TreeType, Long> = enumMapOf()
         fun getTreeCount(): Long = selectedBucket?.let { treesCut[it] } ?: treesCut.values.sum()
-
-        @Expose
-        var wholeTreesCut: MutableMap<TreeType, Double> = enumMapOf()
         fun getWholeTreeCount(): Double = selectedBucket?.let { wholeTreesCut[it] } ?: wholeTreesCut.values.sum()
-
-        @Expose
-        var hotfExperience: MutableMap<TreeType, Long> = enumMapOf()
         fun getHotfExperience(): Long = selectedBucket?.let { hotfExperience[it] } ?: hotfExperience.values.sum()
-
-        @Expose
-        var foragingExperience: MutableMap<TreeType, Long> = enumMapOf()
         fun getForagingExperience(): Long = selectedBucket?.let { foragingExperience[it] } ?: foragingExperience.values.sum()
-
-        @Expose
-        var forestWhispers: MutableMap<TreeType, Long> = enumMapOf()
         fun getForestWhispers(): Long = selectedBucket?.let { forestWhispers[it] } ?: forestWhispers.values.sum()
     }
 
