@@ -62,7 +62,7 @@ object AttributeShardsData {
         onOpenInventory = { DelayedRun.runNextTick { AttributeShardOverlay.updateDisplay() } },
     )
     val confirmFusionInventory = InventoryDetector(
-        openInventory = { DelayedRun.runNextTick { FusionData.updateFusionData() } },
+        onOpenInventory = { DelayedRun.runNextTick { FusionData.updateFusionData() } },
     ) { name -> name == "Confirm Fusion" }
 
     private var lastSyphonedMessage = SimpleTimeMark.farPast()
