@@ -179,7 +179,7 @@ object DamageIndicatorManager {
                 BossType.END_ENDSTONE_PROTECTOR -> 3.0
                 BossType.SLAYER_SPIDER_5_1 -> 2.0
 
-                else -> 0.0
+                else -> 1.0
             }
 
             if (!data.ignoreBlocks && !data.entity.canBeSeen(70.0, vecYOffset = vecYOffset)) continue
