@@ -171,7 +171,8 @@ tasks.register("checkPrDescription", ChangelogVerification::class) {
 //     }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${target.minecraftVersion.versionName}")
+    val versionName = target.minecraftVersion.versionNameOverride ?: target.minecraftVersion.versionName
+    minecraft("com.mojang:minecraft:$versionName")
     if (target.mappingDependency == "official") {
         mappings(loom.officialMojangMappings())
     } else {
