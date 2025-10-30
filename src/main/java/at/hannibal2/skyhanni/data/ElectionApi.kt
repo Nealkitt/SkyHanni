@@ -41,7 +41,8 @@ import kotlin.time.Duration.Companion.minutes
 @SkyHanniModule
 object ElectionApi {
     private val group = RepoPattern.group("mayorapi")
-    private val assumeMayorConfig get() = SkyHanniMod.feature.dev.debug.assumeMayor
+    private val config get() = SkyHanniMod.feature.dev.debug
+    private val assumeMayorConfig get() = config.assumeMayor
 
     /**
      * REGEX-TEST: Schedules an extra §bFishing Festival §7event during the year.
@@ -258,7 +259,7 @@ object ElectionApi {
 
     @HandleEvent
     fun onConfigLoad(event: ConfigLoadEvent) {
-        if (event.firstLoad && SkyHanniMod.feature.dev.debug.disableAssumeMayor) {
+        if (event.firstLoad && config.disableAssumeMayor) {
             assumeMayorConfig.set(ElectionCandidate.DISABLED)
         }
         if (shouldAssumeMayor()) currentMayor = assumeMayorConfig.get().addAllPerks()
