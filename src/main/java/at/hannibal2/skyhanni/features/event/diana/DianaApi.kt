@@ -9,12 +9,14 @@ import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.jsonobjects.repo.DianaJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.MythologicalCreatureType
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.diana.InquisitorFoundEvent
+import at.hannibal2.skyhanni.events.diana.RareDianaMobFoundEvent
 import at.hannibal2.skyhanni.events.entity.EntityEnterWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName
+import at.hannibal2.skyhanni.utils.RegexUtils.matches
+import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.item.ItemStack
 
@@ -46,10 +48,24 @@ object DianaApi {
     var sphinxQuestions = emptyMap<String, String>()
         private set
 
+    private val group = RepoPattern.group("event-diana")
+
+    /**
+     * REGEX-TEST: Minos Inquisitor
+     * REGEX-TEST: Sphinx
+     * REGEX-TEST: King Minos
+     * REGEX-TEST: Manticore
+     */
+    private val rareDianaMobNamePattern by group.pattern(
+        "rare-mob-name",
+        "Minos Inquisitor|Sphinx|King Minos|Manticore",
+    )
+
     @HandleEvent(onlyOnSkyblock = true)
     fun onJoinWorld(event: EntityEnterWorldEvent<EntityOtherPlayerMP>) {
-        if (event.entity.name == "Minos Inquisitor") {
-            InquisitorFoundEvent(event.entity).post()
+        val entity = event.entity
+        if (rareDianaMobNamePattern.matches(entity.name)) {
+            RareDianaMobFoundEvent(entity).post()
         }
     }
 
