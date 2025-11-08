@@ -41,10 +41,12 @@ object MythologicalCreatureTracker {
      * REGEX-TEST: §c§lUh oh! §r§eYou dug out a §r§2Gaia Construct§r§e!
      * REGEX-TEST: §c§lOi! §r§eYou dug out a §r§2Minos Inquisitor§r§e!
      * REGEX-TEST: §c§lOi! §r§eYou dug out §r§2Siamese Lynxes§r§e!
+     * REGEX-TEST: §c§lWoah! §r§eYou dug out a §r§2Cretan Bull§r§e!
+     * REGEX-TEST: §c§lDanger! §r§eYou dug out a §r§2Cretan Bull§r§e!
      */
     private val genericMythologicalSpawnPattern by patternGroup.pattern(
         "generic-spawn",
-        "§c§l(?:Oh|Uh oh|Yikes|Oi|Good Grief)! §r§eYou dug out (?:a )?(?:§[a-f0-9r])*(?<creatureType>[\\w\\s]+)§r§e!",
+        "§c§l(?:Oh|Uh oh|Yikes|Oi|Good Grief|Danger|Woah)! §r§eYou dug out (?:a )?(?:§[a-f0-9r])*(?<creatureType>[\\w\\s]+)§r§e!",
     )
 
     private val tracker = SkyHanniTracker(
