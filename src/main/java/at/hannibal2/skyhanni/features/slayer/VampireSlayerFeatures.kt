@@ -105,7 +105,7 @@ object VampireSlayerFeatures {
         }
     }
 
-    @HandleEvent
+    @HandleEvent(SecondPassedEvent::class)
     fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         entityList.editCopy { removeIf { it.isDead } }
