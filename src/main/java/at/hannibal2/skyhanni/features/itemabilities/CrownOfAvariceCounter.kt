@@ -106,6 +106,9 @@ object CrownOfAvariceCounter {
         update()
     }
 
+    fun isAvariceConsuming(): Boolean =
+        isWearingCrown && (totalCoins ?: 0) < MAX_AVARICE_COINS
+
     @HandleEvent(IslandChangeEvent::class)
     fun onIslandChange() {
         if (config.resetOnWorldChange) reset()
