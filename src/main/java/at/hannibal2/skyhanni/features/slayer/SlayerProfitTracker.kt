@@ -142,7 +142,7 @@ object SlayerProfitTracker {
                     category,
                 ) { Data() }
             }
-            SkyHanniItemTracker("$categoryName Profit Tracker", { Data() }, getStorage) { drawDisplay(it) }
+            SkyHanniItemTracker("$categoryName Profit Tracker", ::Data, getStorage) { drawDisplay(it) }
         }
     }
 
@@ -226,7 +226,7 @@ object SlayerProfitTracker {
         RenderDisplayHelper(
             outsideInventory = true,
             inOwnInventory = true,
-            condition = { shouldShowDisplay() },
+            condition = ::shouldShowDisplay,
             onRender = {
                 getTracker()?.renderDisplay(config.pos)
             },
