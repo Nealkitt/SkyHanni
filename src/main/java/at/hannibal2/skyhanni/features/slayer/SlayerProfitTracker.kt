@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
-import at.hannibal2.skyhanni.data.ElectionApi
 import at.hannibal2.skyhanni.data.ItemAddManager
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.jsonobjects.repo.SlayerProfitTrackerItemsJson
@@ -108,7 +107,7 @@ object SlayerProfitTracker {
         }
         // TODO spawn costs in repo
         if (event.reason == PurseChangeCause.LOSE_SLAYER_QUEST_STARTED) {
-            val coinsCap = if (ElectionApi.isAura) -1_000_000 else -150_000
+            val coinsCap = -350_000
             if (coins < coinsCap || coins > 0) {
                 ChatUtils.debug("Wrong Slayer Spawn Cost! Ignoring!")
                 return
