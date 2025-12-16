@@ -135,7 +135,7 @@ object GardenVisitorFeatures {
         display = emptyList()
     }
 
-    @HandleEvent
+    @HandleEvent(priority = HandleEvent.HIGHEST)
     fun onVisitorOpen(event: VisitorOpenEvent) {
         val visitor = event.visitor
         val offerItem = visitor.offer?.offerItem ?: return
@@ -321,23 +321,28 @@ object GardenVisitorFeatures {
         }
     }
 
-    private fun MutableList<Renderable>.drawVisitor(visitor: String) {
-        val displayName = GardenVisitorColorNames.getColoredName(visitor)
+    private fun MutableList<Renderable>.drawVisitor(visitorName: String) {
+        val displayName = GardenVisitorColorNames.getColoredName(visitorName)
 
         val list = mutableListOf<Renderable>()
         list.addString(" §7- $displayName")
 
         if (config.shoppingList.itemPreview) {
-            val items = GardenVisitorColorNames.visitorItems[visitor.removeColor()]
+            val visitor = GardenVisitorColorNames.visitorMap[visitorName.removeColor()]
+            val items = visitor?.needItems
             if (items == null) {
-                val text = "Visitor '$visitor§7' has no items in repo!"
+                val text = "Visitor '$visitorName§7' has no items in repo!"
                 logger.log(text)
                 ChatUtils.debug(text)
                 list.addString(" §7(§c?§7)")
                 return
             }
             if (items.isEmpty()) {
-                list.addString(" §7(§fAny§7)")
+                if (visitor.unknownRewards == true) {
+                    list.addString(" §7(§fUnknown§7)")
+                } else {
+                    list.addString(" §7(§fAny§7)")
+                }
             } else {
                 for (item in items) {
                     list.addItemStack(NeuInternalName.fromItemName(item).getItemStack())
