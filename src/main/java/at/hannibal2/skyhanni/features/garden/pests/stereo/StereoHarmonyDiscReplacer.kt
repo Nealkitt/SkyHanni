@@ -11,8 +11,9 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.setLore
 import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
+import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.compat.setCustomItemName
-import net.minecraft.item.ItemStack
+import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 object StereoHarmonyDiscReplacer {
@@ -40,7 +41,7 @@ object StereoHarmonyDiscReplacer {
             cropType.getItemStackCopy(iconId).apply {
                 if (isActiveVinyl) addEnchantGlint()
                 setLore(lore)
-                setCustomItemName(item.displayName)
+                setCustomItemName(item.hoverName.formattedTextCompatLeadingWhiteLessResets())
             }
         }
 
