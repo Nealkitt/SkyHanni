@@ -165,6 +165,11 @@ object ItemUtils {
         return lore
     }
 
+    fun ItemStack.getLoreComponent(): List<Component> {
+        val lore = this.get(DataComponents.LORE)?.lines
+        return lore ?: emptyList()
+    }
+
     fun ItemStack.getSingleLineLore(): String = getLore().filter { it.isNotEmpty() }.joinToString(" ")
 
     fun DataComponentMap?.getLore(): List<String> {
@@ -197,8 +202,13 @@ object ItemUtils {
         return name
     }
 
-    fun ItemStack.setLore(lore: List<String>): ItemStack {
+    fun ItemStack.setLoreString(lore: List<String>): ItemStack {
         this.set(DataComponents.LORE, ItemLore(lore.map { Component.nullToEmpty(it) }))
+        return this
+    }
+
+    fun ItemStack.setLore(lore: List<Component>): ItemStack {
+        this.set(DataComponents.LORE, ItemLore(lore))
         return this
     }
 
@@ -321,7 +331,7 @@ object ItemUtils {
         //$$ stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile))
         //#endif
         stack.setCustomItemName(displayName)
-        stack.setLore(lore.toList())
+        stack.setLoreString(lore.toList())
         return stack
     }
 
@@ -337,7 +347,7 @@ object ItemUtils {
     fun createItemStack(item: Item, displayName: String, lore: List<String>, amount: Int = 1): ItemStack {
         val stack = ItemStack(item, amount)
         stack.setCustomItemName(displayName)
-        stack.setLore(lore)
+        stack.setLoreString(lore)
         var tooltipDisplay = net.minecraft.world.item.component.TooltipDisplay.DEFAULT.withHidden(DataComponents.DAMAGE, true)
         tooltipDisplay = tooltipDisplay.withHidden(DataComponents.ATTRIBUTE_MODIFIERS, true)
         tooltipDisplay = tooltipDisplay.withHidden(DataComponents.UNBREAKABLE, true)
@@ -443,7 +453,7 @@ object ItemUtils {
     // Taken from NEU
     fun ItemStack.editItemInfo(displayName: String, disableNeuTooltips: Boolean, lore: List<String>): ItemStack {
         this.setCustomItemName(displayName)
-        this.setLore(lore)
+        this.setLoreString(lore)
         return this
     }
 
