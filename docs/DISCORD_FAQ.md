@@ -53,5 +53,8 @@ _Frequently Asked Questions_
 > While interrupting your current chain to focus on a nearby burrow might feel counterintuitive, it ultimately benefits you in the long run.
 > The existing chain isn't reset, and you gain the advantage of a higher burrow digging rate.
 
+> **10: Why is my tab list showing twice/overlapping?**
+> This is a mod conflict with Skyblocker "fancy tab HUD" and SkyHanni "Compact Tab List", disable the one you dislike.
+
 *This FAQ was last updated on January 25th, 2026
 If you believe there's something that should be added to this list, please tell us, so we can add it.*
