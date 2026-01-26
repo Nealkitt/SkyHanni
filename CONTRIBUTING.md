@@ -1,7 +1,7 @@
 # How to Contribute
 
 This is a technical guide that helps Kotlin and Java developers understand how SkyHanni works, and provides the first
-steps for new Forge developers to take.
+steps for new Fabric developers to take.
 
 ## Development Environment Setup
 
