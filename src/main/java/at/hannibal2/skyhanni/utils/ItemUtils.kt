@@ -522,13 +522,13 @@ object ItemUtils {
      */
     private val enchantedBookPattern by RepoPattern.pattern(
         "item.enchantedbook",
-        "§fEnchanted Book \\((?<item>.+)\\)",
+        "(?:§f)?Enchanted Book \\((?<item>.+)\\)"
     )
 
-    fun readBookType(input: String): String? {
-        return enchantedBookPattern.matchMatcher(input) {
-            group("item").removeColor()
-        }
+    fun readBookTypeStrippedColor(input: String): String? = readBookType(input)?.removeColor()
+
+    fun readBookType(input: String): String? = enchantedBookPattern.matchMatcher(input) {
+        group("item")
     }
 
     private fun makePair(input: String, itemName: String, matcher: Matcher): Pair<String, Int> {
