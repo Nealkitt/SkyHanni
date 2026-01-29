@@ -15,14 +15,13 @@ import at.hannibal2.skyhanni.data.garden.EliteFarmersLeaderboard.leaderboardMinA
 import at.hannibal2.skyhanni.data.garden.EliteFarmersLeaderboard.loadingLeaderboardMutex
 import at.hannibal2.skyhanni.data.garden.FarmingWeightData
 import at.hannibal2.skyhanni.data.garden.FarmingWeightData.getWeight
+import at.hannibal2.skyhanni.data.garden.FarmingWeightData.openWebsite
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardMode
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardType
 import at.hannibal2.skyhanni.features.garden.GardenApi
-import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
-import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -250,17 +249,5 @@ abstract class EliteLeaderboardDisplayBase<E : Enum<E>, T : EliteLeaderboardType
         }
 
         position.renderRenderables(display, posLabel = name)
-    }
-
-    private var lastName = ""
-    private var lastOpenWebsite = SimpleTimeMark.farPast()
-
-    private fun openWebsite(name: String, ignoreCooldown: Boolean = false) {
-        if (!ignoreCooldown && lastOpenWebsite.passedSince() < 5.seconds && name == lastName) return
-        lastOpenWebsite = SimpleTimeMark.now()
-        lastName = name
-
-        OSUtils.openBrowser("https://elitebot.dev/@$name/")
-        ChatUtils.chat("Opening Farming Profile of player §b$name")
     }
 }
