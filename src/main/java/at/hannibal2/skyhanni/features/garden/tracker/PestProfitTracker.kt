@@ -52,6 +52,7 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.tracker.BucketedItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.ItemTrackerData.TrackedItem
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniBucketedItemTracker
+import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
 import com.google.gson.JsonPrimitive
 import com.google.gson.annotations.Expose
 import com.google.gson.reflect.TypeToken
@@ -65,6 +66,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
     ::BucketData,
     { it.garden.pestProfitTracker },
     { drawDisplay(it) },
+    trackerConfig = { SkyHanniMod.feature.garden.pests.pestProfitTracker.perTrackerConfig }
 ) {
     val config: PestProfitTrackerConfig get() = SkyHanniMod.feature.garden.pests.pestProfitTracker
 
@@ -115,11 +117,11 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             )
         }
 
-        override fun getCustomPricePer(internalName: NeuInternalName): Double {
+        override fun getCustomPricePer(internalName: NeuInternalName, tracker: SkyHanniTracker<*, *>): Double {
             return if (internalName == BITS) {
                 getBitsPrice()
             } else {
-                super.getCustomPricePer(internalName)
+                super.getCustomPricePer(internalName, tracker)
             }
         }
 
