@@ -297,7 +297,7 @@ Helps you write minecraft specific code such as mixins and access wideners.
 
 ### Basics
 
-SkyHanni is a Fabric mod for Minecraft 1.21.5+, written in [Kotlin](https://kotlinlang.org/)
+SkyHanni is a Fabric mod for Minecraft, written in [Kotlin](https://kotlinlang.org/)
 and [Java](https://www.java.com/en/).
 
 We use a [Gradle configuration](https://gradle.org/) to build the mod,
