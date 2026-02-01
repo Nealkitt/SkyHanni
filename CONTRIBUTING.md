@@ -306,13 +306,6 @@ written in [Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.htm
 
 This start script will automatically download all required libraries.
 
-### NotEnoughUpdates
-
-SkyHanni requires **[NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates/)**.
-We use NEU to get auction house and bazaar price data for items and to read
-the [NEU Item Repo](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) for item internal names, display names
-and recipes.
-
 ### Config
 
 SkyHanni stores the config (settings and user data) as a json object in a single text file.
