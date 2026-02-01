@@ -308,7 +308,7 @@ This start script will automatically download all required libraries.
 
 ### NotEnoughUpdates
 
-Although NEU is not a modern version mod, we use NEU API's to get auction house and bazaar price data for items and to read 
+Although NEU is not a modern version mod, we use NEU API's to get auction house and bazaar price data for items and read 
 the [NEU Item Repo](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) for item internal names, display names
 and recipes.
 
