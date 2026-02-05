@@ -48,10 +48,10 @@ object ComposterDisplay {
     private var tabListData by ComposterApi::tabListData
 
     enum class DataType(rawPattern: String, val icon: String) {
-        ORGANIC_MATTER(" Organic Matter: §r(.*)", "WHEAT"),
-        FUEL(" Fuel: §r(.*)", "OIL_BARREL"),
-        TIME_LEFT(" Time Left: §r(.*)", "WATCH"),
-        STORED_COMPOST(" Stored Compost: §r(.*)", "COMPOST");
+        ORGANIC_MATTER(" Organic Matter: (.*)", "WHEAT"),
+        FUEL(" Fuel: (.*)", "OIL_BARREL"),
+        TIME_LEFT(" Time Left: (.*)", "WATCH"),
+        STORED_COMPOST(" Stored Compost: (.*)", "COMPOST");
 
         val displayItem by AutoUpdatingItemStack(icon)
 
@@ -71,7 +71,20 @@ object ComposterDisplay {
     fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.COMPOSTER)) return
 
-        readData(event.lines)
+        val newData = mutableMapOf<DataType, String>()
+
+        for (line in event.lines) {
+            if (line.string != "Composter:") {
+                if (line.string == "") break
+                for (type in DataType.entries) {
+                    type.pattern.matchMatcher(line) {
+                        newData[type] = group(1)
+                    }
+                }
+            }
+        }
+
+        tabListData = newData
 
         if (tabListData.isNotEmpty()) {
             composterEmptyTime = ComposterApi.estimateEmptyTimeFromTab()
@@ -104,28 +117,6 @@ object ComposterDisplay {
                 addString("§b$format")
             }
         } else Renderable.text("§cOpen Composter Upgrades!")
-    }
-
-    private fun readData(tabList: List<String>) {
-        var next = false
-        val newData = mutableMapOf<DataType, String>()
-
-        for (line in tabList) {
-            if (line == "§b§lComposter:") {
-                next = true
-                continue
-            }
-            if (next) {
-                if (line == "") break
-                for (type in DataType.entries) {
-                    type.pattern.matchMatcher(line) {
-                        newData[type] = group(1)
-                    }
-                }
-            }
-        }
-
-        tabListData = newData
     }
 
     private fun sendNotify() {
