@@ -297,7 +297,7 @@ Helps you write minecraft specific code such as mixins and access wideners.
 
 ### Basics
 
-SkyHanni is a Fabric mod for Minecraft 1.21.5+, written in [Kotlin](https://kotlinlang.org/)
+SkyHanni is a Fabric mod for Minecraft, written in [Kotlin](https://kotlinlang.org/)
 and [Java](https://www.java.com/en/).
 
 We use a [Gradle configuration](https://gradle.org/) to build the mod,
@@ -308,8 +308,7 @@ This start script will automatically download all required libraries.
 
 ### NotEnoughUpdates
 
-SkyHanni requires **[NotEnoughUpdates](https://github.com/NotEnoughUpdates/NotEnoughUpdates/)**.
-We use NEU to get auction house and bazaar price data for items and to read
+Although NEU is not a modern version mod, we use NEU API's to get auction house price data for items and read 
 the [NEU Item Repo](https://github.com/NotEnoughUpdates/NotEnoughUpdates-REPO) for item internal names, display names
 and recipes.
 
