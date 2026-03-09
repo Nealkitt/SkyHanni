@@ -19,10 +19,10 @@ import at.hannibal2.skyhanni.features.combat.InstanceChestAPI.isInstanceChestGUI
 import at.hannibal2.skyhanni.features.misc.items.EstimatedItemValueCalculator
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.DiscountUtils.getDiscountedPrice
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoin
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
-import at.hannibal2.skyhanni.utils.ItemPriceUtils.getRawCraftCostOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
@@ -268,7 +268,7 @@ object InstanceChestProfit {
                         chestList.add(internalName)
                     }
                     kuudraChestKey.matchMatcher(loreLine) {
-                        cost += internalName.getRawCraftCostOrNull(config.priceSource)?.times(-1) ?: 0.0
+                        cost += internalName.getDiscountedPrice(config.priceSource).times(-1)
                     }
                 }
             }
@@ -358,7 +358,7 @@ object InstanceChestProfit {
             }
             kuudraChestKey.matchMatcher(it) {
                 val name = NeuInternalName.fromItemName(it)
-                itemsWithCost.put(it, name.getRawCraftCostOrNull(config.priceSource)?.times(-1) ?: 0.0)
+                itemsWithCost.put(it, name.getDiscountedPrice(config.priceSource).times(-1))
             }
         }
 
