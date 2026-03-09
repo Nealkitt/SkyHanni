@@ -33,7 +33,6 @@ import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.NONE
-import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.PetUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
@@ -53,6 +52,7 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
+@Suppress("UnusedPrivateProperty")
 object InstanceChestProfit {
     private val patternGroup = RepoPattern.group("combat.instance-chest-profit")
 
@@ -131,12 +131,21 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §d§lUltimate Wise I§f
+     * REGEX-TEST: §d§lWisdom I§f
      * REGEX-TEST: §d§lCombo I§f
      */
     private val bookColorFixer by patternGroup.pattern(
-        "bookcolorfix",
+        "bookcolorfixnew",
         "(?<item>.+)(?:§.)+",
+    )
+
+    /**
+     * REGEX-TEST: Enchanted Book (§d§lWisdom I§f)
+     * REGEX-TEST: Enchanted Book (§d§lCombo I§f)
+     */
+    private val bookColorFixerold by patternGroup.pattern( // Remove after 7.6.0 is pushed
+        "bookcolorfix",
+        "Enchanted Book \\((?<item>.+)(?:§.)+\\)"
     )
 
     private val config get() = SkyHanniMod.feature.combat.instanceChestProfit
@@ -232,11 +241,10 @@ object InstanceChestProfit {
                 }
             } else {
                 var itemPrice: Double
-                var itemName = ItemUtils.readBookType(loreLine) ?: loreLine
-                var itemInternalName = NeuInternalName.fromItemNameOrNull(itemName)
-                bookColorFixer.matchMatcher(itemName) {
-                    itemName = ItemResolutionQuery.resolveEnchantmentByName(group("item"))?.repoItemName ?: itemName
-                    itemInternalName = itemName.toInternalName()
+                val bookCheckedLoreLine = ItemUtils.readBookType(loreLine) ?: loreLine
+                var itemInternalName = NeuInternalName.fromItemNameOrNull(bookCheckedLoreLine)
+                bookColorFixer.matchMatcher(bookCheckedLoreLine) {
+                    itemInternalName = ItemResolutionQuery.resolveEnchantmentByName(group("item")) ?: itemInternalName
                 }
                 val internalName = itemInternalName
                 var favorited = ""
