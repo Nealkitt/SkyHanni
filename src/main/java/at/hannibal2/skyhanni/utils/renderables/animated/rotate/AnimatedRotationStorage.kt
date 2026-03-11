@@ -37,7 +37,7 @@ open class AnimatedRotationLocalStorage(
         ),
     )
 
-    constructor(vararg definitionPairs: Pair<Axis, AxisRotationDefinition>) : this(AnimatedRotationDefinition(*definitionPairs))
+    constructor(vararg definitionPairs: Pair<Axis, AxisRotationDefinition>) : this(AnimatedRotationDefinition(definitionPairs.toMap()))
 }
 
 open class AnimatedRotationPropertyStorage(
