@@ -25,7 +25,7 @@ Describe what this pull request does, including technical details, screenshots, 
 </details>
 
 ## Changelog New Features
-+ Cool new feature. - your_name_here
++ Added Cool new feature. - your_name_here
     * Extra info.
 
 ## Changelog Improvements
