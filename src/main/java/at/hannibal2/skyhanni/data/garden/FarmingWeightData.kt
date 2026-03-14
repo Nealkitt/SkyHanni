@@ -103,6 +103,7 @@ object FarmingWeightData {
                 EliteLeaderboardMode.ALL_TIME -> {
                     // we only update collections on garden join
                 }
+
                 EliteLeaderboardMode.MONTHLY ->
                     getLeaderboardPosition(EliteLeaderboardType.Weight(FarmingWeight.FARMING_WEIGHT, leaderboardMode))
             }
