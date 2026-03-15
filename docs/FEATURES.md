@@ -311,6 +311,7 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
     + Coins in excess of the integer limit on an individual order do not count towards the daily limit.
     + Resets at midnight UTC.
 + Added a keybind to fill your inventory with the hovered item from Sacks. - nopo (https://github.com/hannibal002/SkyHanni/pull/4697)
++ Added Supercrafting menu quantity preset overlay. - HyperKids (https://github.com/hannibal002/SkyHanni/pull/5296)
 
 </details>
 <details open><summary>
