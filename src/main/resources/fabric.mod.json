@@ -53,6 +53,7 @@
         "minecraft": "${minecraft}"
     },
     "breaks": {
+        "clientspoofer": "*",
         "exordium": "*"
     },
     "contact": {
