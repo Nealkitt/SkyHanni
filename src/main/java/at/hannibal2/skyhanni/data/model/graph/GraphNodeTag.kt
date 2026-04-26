@@ -9,6 +9,7 @@ enum class GraphNodeTag(
     val cleanName: String,
     val description: String,
     val onlyIsland: IslandType? = null,
+    // only show the node tag in the graph editor when on those islands. this is just a debug visual thing, no user impact
     val onlyIslands: Set<IslandType> = emptySet(),
     val onlySkyblock: Boolean? = true,
 ) {
