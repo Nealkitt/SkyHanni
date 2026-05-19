@@ -173,7 +173,7 @@ object BarnFishingTimer {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Fishing Timer")
         event.addIrrelevant {
             add("ownMobs $ownMobs")
