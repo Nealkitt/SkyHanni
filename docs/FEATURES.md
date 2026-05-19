@@ -865,6 +865,8 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
 + Added an option to prevent breaking crops on the Garden while holding a fishing rod. - Luna (https://github.com/hannibal002/SkyHanni/pull/5455)
 + Added option to reduce sensitivity while holding Squeaky Mousemat. - Nick-NCSU (https://github.com/hannibal002/SkyHanni/pull/5391)
 + Hide annoying messages about Kernels getting added to your purse while farming. - Shana (https://github.com/hannibal002/SkyHanni/pull/5679)
++ Added current Harvest Feast in-season crop display. - Marie (https://github.com/hannibal002/SkyHanni/pull/5653)
+    + Displays the currently in-season Harvest Feast crops and how long they will be in season for.
 
 ### Garden Pests
 
@@ -1241,6 +1243,7 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
 + Added Shiny orb helper. - Daveed & CalMWolfs (https://github.com/hannibal002/SkyHanni/pull/4355)
     + Shows lines between you, your pig and it's orb.
 + Added Shiny orb tracker. - Daveed (https://github.com/hannibal002/SkyHanni/pull/4355)
++ Added a fix for a Hypixel bug where Diana spades will sometimes play low-pitched Minecraft music. - Luna (https://github.com/hannibal002/SkyHanni/pull/5527)
 
 ### Hoppity and Chocolate Factory
 
