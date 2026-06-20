@@ -144,10 +144,6 @@ object TunnelsMaps {
         "mining.commisson.completed",
         "§a§lCOMPLETED",
     )
-    private val completedPatternTest by RepoPattern.pattern(
-        "mining.commisson.completed.test",
-        "This is a §cbloody §ftest",
-    )
     private val commissionInvPattern by RepoPattern.pattern(
         "mining.commission.inventory",
         "Commissions",
