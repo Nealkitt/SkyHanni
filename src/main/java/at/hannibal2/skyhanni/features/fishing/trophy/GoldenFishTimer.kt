@@ -7,8 +7,6 @@ import at.hannibal2.skyhanni.config.features.fishing.trophyfishing.GoldenFishTim
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.EntityMaxHealthUpdateEvent
 import at.hannibal2.skyhanni.events.fishing.FishingBobberCastEvent
@@ -196,7 +194,7 @@ object GoldenFishTimer {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isActive()) return
         display?.let {
             config.position.renderRenderable(it, posLabel = "Golden Fish Timer")
@@ -294,7 +292,7 @@ object GoldenFishTimer {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
         hasLavaRodInInventory = InventoryUtils.containsInLowerInventoryInternalName { it.isLavaRod() }
 
@@ -334,8 +332,8 @@ object GoldenFishTimer {
         }
     }
 
-    @HandleEvent
-    fun onBobberThrow(event: FishingBobberCastEvent) {
+    @HandleEvent(FishingBobberCastEvent::class)
+    fun onBobberThrow() {
         if (!isActive()) return
         goingDownInit = true
         goingDownPost = false
@@ -377,7 +375,7 @@ object GoldenFishTimer {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Golden Fish Timer")
         if (!isEnabled()) {
             event.addIrrelevant("Not Enabled")
