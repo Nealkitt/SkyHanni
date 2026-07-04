@@ -251,6 +251,10 @@ Make sure such pull requests have a good explanation in the **What** section.
   Only backend data classes in the `api` packages should listen to Fabric events. Their job is to process
   the Fabric event and fire a corresponding SkyHanni event that feature classes then use.
   See the `api/minecraftevents` package for examples.
+- Every event class must have a KDoc comment that describes: what the event represents,
+  when it is fired, what each parameter means, and optionally, when to use or not use it.
+    - For new events, the KDoc is required in the same PR.
+    - For existing events, add the KDoc the next time the event is touched or newly used in a PR.
 - Please use existing utils methods.
 - Never use  `System.currentTimeMillis()`. Use our own class `SimpleTimeMark` instead.
     - See [this commit](https://github.com/hannibal002/SkyHanni/commit/3d748cb79f3a1afa7f1a9b7d0561e5d7bb284a9b)
