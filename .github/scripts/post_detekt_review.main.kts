@@ -84,7 +84,7 @@ fun buildBody(findings: List<Finding>): String = buildString {
         appendLine("## No Detekt issues found ✅")
         return@buildString
     }
-    appendLine("## Detekt found ${findings.size} ${if (findings.size == 1) "issue" else "issues"}")
+    appendLine("### Detekt found ${findings.size} ${if (findings.size == 1) "issue" else "issues"}")
     appendLine("")
     val direct = findings.take(20)
     val overflow = findings.drop(20)
