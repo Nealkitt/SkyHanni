@@ -373,11 +373,16 @@ SkyHanni uses KSP via the `annotation-processors` module to generate code at com
 
 SkyHanni uses a repo system to easily change static variables without the need for a mod update.
 The repo is located at https://github.com/hannibal002/SkyHanni-REPO.
-A copy of all json files is stored on the computer under `.minecraft\config\skyhanni\repo`.
+A copy of all JSON files is stored on the computer under `.minecraft\config\skyhanni\repo`.
 On every game start, the copy gets updated (if outdated and if not manually disabled).
-If you add stuff to the repo make sure it gets serialised. See
+If you add stuff to the repo make sure it gets serialized. See
 the [JsonObjects](src/main/java/at/hannibal2/skyhanni/data/jsonobjects/repo)
 folder for how to properly do this. You also may have to disable repo auto update in game.
+
+If your PR adds or changes data in the repo, open a separate PR on the [SkyHanni-REPO](https://github.com/hannibal002/SkyHanni-REPO)
+repository as well.
+Keep the main mod PR as a draft until the repo PR is ready.
+Link the repo PR URL in the `## Dependencies` section of the mod PR.
 
 ### Discord IPC
 
